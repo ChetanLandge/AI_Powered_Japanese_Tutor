@@ -1,0 +1,93 @@
+<link rel="manifest" href="/static/manifest.json" />
+<meta name="theme-color" content="#5e60ce" />
+<link rel="icon" href="/static/icons/icon-192.png">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Japanese Bhaula</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="logo">🎌 JB</div>
+        <div class="nav-icons">
+          <span>🏠</span>
+          <span>💬</span>
+          <span>📝</span>
+          <span>⚙️</span>
+        </div>
+      </div>
+      <div class="sidebar-bottom">
+        <span id="profile-icon">👤</span>
+      </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="chat-area">
+      <header class="chat-header">
+        <h2>Japanese Bhaula</h2>
+      </header>
+
+      <div class="chat-box" id="chat-box"></div>
+
+      <div class="input-area">
+        <input type="text" id="user-input" placeholder="Type in English..." />
+        <button onclick="sendMessage()">➤</button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const message = input.value.trim();
+      if (!message) return;
+
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML += `<div class="message user">🧑‍💻 ${message}</div>`;
+      input.value = "";
+
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await res.json();
+      const reply = data.response;
+
+      const styledReply = reply
+        .replace(/\n/g, "<br>")
+        .replace(/Vocabulary:/i, "📘 <strong>Vocabulary:</strong>")
+        .replace(/Grammar:/i, "📚 <strong>Grammar:</strong>")
+        .replace(/Similar use case:/i, "🔁 <strong>Similar Use Case:</strong>")
+        .replace(/Example sentence:/i, "📝 <strong>Example Sentence:</strong>")
+        .replace(/Translation:/i, "🌐 <strong>Translation:</strong>");
+
+      chatBox.innerHTML += `<div class="message bot">🤖 ${styledReply}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    document.getElementById("user-input").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    // ⚙️ Icon kept, but no action
+    document.getElementById("profile-icon").addEventListener("click", () => {
+      alert("New features are coming soon! ✨ Stay tuned 🙂");
+    });
+  </script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/service-worker.js')
+      .then(() => console.log('Service Worker Registered'));
+  }
+</script>
+</body>
+</html>
