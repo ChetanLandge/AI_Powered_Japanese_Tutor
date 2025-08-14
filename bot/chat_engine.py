@@ -2,7 +2,7 @@ import openai
 import os
 
 # Load your OpenAI API key from environment
-openai.api_key = os.getenv("JAP_API_KEY")
+openai.api_key = os.getenv("API_KEY")
 
 def get_gpt_response(user_input):
     try:
